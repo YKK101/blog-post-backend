@@ -1,0 +1,12 @@
+node_modules/
+/dist/
+/.env
+/.docker
+npm-debug.log
+package-lock.json
+*.log
+/.idea/
+/.vscode/
+.DS_Store
+/dev_data
+/prisma/migrations

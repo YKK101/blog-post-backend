@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Add your models here
+
+enum ParentType {
+  POST
+  COMMENT
+}
+
+model User {
+  id                String    @id @default(uuid())
+  username          String    @unique
+  displayName       String
+  profilePictureUrl String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  comments          Comment[] @relation("CommentAuthor")
+}
+
+model Comment {
+  id         String     @id @default(uuid())
+  content    String     // Text content, can be expanded to support other formats
+  authorId   String
+  author     User       @relation("CommentAuthor", fields: [authorId], references: [id])
+  parentId   String     // ID of either a post or another comment
+  parentType ParentType // Determines if parentId refers to a post or comment
+  parent     Comment?   @relation("CommentReplies", fields: [parentId], references: [id])
+  replies    Comment[]  @relation("CommentReplies")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@index([authorId])
+  @@index([parentId, parentType])
+}

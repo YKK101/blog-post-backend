@@ -1,0 +1,55 @@
+services:
+  blog_post_backend:
+    build:
+      context: ../..
+      dockerfile: docker/development/Dockerfile.dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - ../../.env
+    volumes:
+      - ../..:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      blog_post_db:
+        condition: service_healthy
+      blog_post_redis:
+        condition: service_healthy
+    command: sh -c "npm run prisma:migrate:dev -- --name init --create-only && npm run prisma:migrate:deploy && npm run start:dev"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+
+  blog_post_db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=blog_post
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../../dev_data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  blog_post_redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ../../dev_data/redis:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dev_data:
