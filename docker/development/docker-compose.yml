@@ -15,7 +15,13 @@ services:
         condition: service_healthy
       blog_post_redis:
         condition: service_healthy
-    command: sh -c "npm run prisma:migrate:dev -- --name init --create-only && npm run prisma:migrate:deploy && npm run start:dev"
+    command: >
+      sh -c "
+        npm run prisma:migrate:dev -- --name init --create-only &&
+        npm run prisma:migrate:deploy &&
+        npm run seed &&
+        npm run start:dev
+      "
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:3000/health" ]
       interval: 60s

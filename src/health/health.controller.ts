@@ -20,7 +20,6 @@ export class HealthController {
   async check() {
     const strapiUrl = this.configService.get('strapi.url');
     const redisUrl = this.configService.get('redis.url');
-    console.log(strapiUrl, redisUrl);
 
     return this.health.check([
       // Check if Prisma can connect to the database
