@@ -15,7 +15,7 @@ import config from './config';
     PrismaModule,
     CacheModule.register({
       store: RedisStore,
-      url: process.env.REDIS_URL,
+      url: `redis://${process.env.REDIS_USERNAME}:password@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     }),
     HealthModule,
   ],
