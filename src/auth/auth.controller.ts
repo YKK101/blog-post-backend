@@ -1,4 +1,4 @@
-import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Body, BadRequestException, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SigninInput } from './dto/signin.input';
 
@@ -7,11 +7,7 @@ export class AuthController {
     constructor(private readonly authService: AuthService) { }
 
     @Post('signin')
-    async signin(@Body() credential: SigninInput) {
-        if (!credential?.username) {
-            throw new BadRequestException('"username" is required');
-        }
-
+    async signin(@Body(new ValidationPipe()) credential: SigninInput) {
         return this.authService.signin(credential);
     }
 }

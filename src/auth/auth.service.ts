@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthSuccessDTO } from './dto/authSuccess.dto';
 import { SigninInput } from './dto/signin.input';
 import { JwtPayloadDTO } from './dto/jwtPayload.dto';
+import { INVALID_CREDENTIAL } from '@/constants/error';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
         const user = await this.userService.getUser({ username: credential.username });
 
         if (!user) {
-            throw new BadRequestException('Invalid Credential');
+            throw new BadRequestException(INVALID_CREDENTIAL);
         }
 
         const payload: Partial<JwtPayloadDTO> = { displayName: user.displayName, sub: user.id };

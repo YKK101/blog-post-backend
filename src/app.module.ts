@@ -9,6 +9,9 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/guard/roles.guard';
 import { UserModule } from './user/user.module';
+import { PostModule } from './post/post.module';
+import { StrapiModule } from './strapi/strapi.module';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -28,6 +31,9 @@ import { UserModule } from './user/user.module';
     // Custom Module
     AuthModule,
     UserModule,
+    PostModule,
+    StrapiModule,
+    CommentModule,
   ],
   providers: [
     {

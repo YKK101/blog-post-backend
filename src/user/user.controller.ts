@@ -1,6 +1,5 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
-import { BadRequestException } from '@nestjs/common';
 import { CreateUserInput } from './dto/createUser.input';
 import { Roles } from '@/auth/guard/roles.decorator';
 import { RoleType } from '@/constants/enum';
@@ -11,13 +10,7 @@ export class UserController {
 
     @Post()
     @Roles(RoleType.ADMIN)
-    async createUser(@Body() payload: CreateUserInput) {
-        if (!payload?.username) {
-            throw new BadRequestException('"username" is required');
-        } else if (!payload?.displayName) {
-            throw new BadRequestException('"displayName" is required');
-        }
-
+    async createUser(@Body(new ValidationPipe()) payload: CreateUserInput) {
         return this.userService.createUser(payload);
     }
 }

@@ -78,6 +78,11 @@ export class UserService {
         return UserDTO.fromUser(user);
     }
 
+    async searchUsers({ where }: { where: Record<string, any> }) {
+        const users = await this.prisma.user.findMany({ where });
+        return users.map(UserDTO.fromUser);
+    }
+
     async getUserRolesIdList(userId: string): Promise<RoleType[]> {
         const userRoles = await this.prisma.userRole.findMany({
             where: { userId },
