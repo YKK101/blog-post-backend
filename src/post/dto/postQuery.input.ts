@@ -3,7 +3,8 @@ import { StrapiPaginationInput } from "@/strapi/dto/query.input";
 
 export class PostQueryInput {
     keyword?: string;
-    filters?: Record<string, any>;
+    categories?: string[];
+    authors?: string[];
     sort?: string[] | string;
     pagination?: StrapiPaginationInput;
     withAuthor?: boolean;
@@ -16,7 +17,8 @@ export class PostQueryInput {
     static fromParsedQuery(json: Record<string, any>): PostQueryInput {
         return {
             keyword: json['keyword'],
-            filters: json['filters'],
+            categories: json['categories'],
+            authors: json['authors'],
             sort: json['sort'],
             pagination: StrapiPaginationInput.fromJSON(json['pagination']),
             withAuthor: json['withAuthor'] === 'true',

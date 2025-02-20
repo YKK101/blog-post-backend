@@ -62,11 +62,11 @@ export class PostService {
     }
 
     async searchPosts({
-        keyword, filters, sort, pagination, withAuthor = false, publicationState = PublicationState.LIVE
+        keyword, categories, authors, sort, pagination, withAuthor = false, publicationState = PublicationState.LIVE
     }: PostQueryInput): Promise<SearchResultDto<PostDTO>> {
         try {
             let keywordFilters = {}
-            if (keyword) {
+            if (!!keyword) {
                 keywordFilters = {
                     $or: [
                         {
@@ -88,7 +88,17 @@ export class PostService {
                 }
             }
 
-            const formattedFilters = { '$and': [filters, keywordFilters] }
+            let categoryFilters = {}
+            if (!!categories && categories.length > 0) {
+                categoryFilters = { categories: { documentId: categories } }
+            }
+
+            let authorFilters = {}
+            if (!!authors && authors.length > 0) {
+                authorFilters = { authorId: authors }
+            }
+
+            const formattedFilters = { '$and': [categoryFilters, keywordFilters, authorFilters].filter(filter => filter && Object.keys(filter).length > 0) }
 
             const searchOptions = { filters: formattedFilters, sort, pagination, publicationState }
             const { data, meta } = await this.strapiService.searchEntries(this.PATH, searchOptions);

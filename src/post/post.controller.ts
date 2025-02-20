@@ -50,9 +50,14 @@ export class PostController {
         schema: { type: 'string' }
     })
     @ApiQuery({
-        name: 'filters',
+        name: 'categories',
         required: false,
-        schema: { type: 'object' }
+        schema: { type: 'array', items: { type: 'string' } }
+    })
+    @ApiQuery({
+        name: 'authors',
+        required: false,
+        schema: { type: 'array', items: { type: 'string' } }
     })
     @ApiQuery({
         name: 'sort',
