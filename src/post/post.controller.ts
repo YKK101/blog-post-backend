@@ -139,6 +139,37 @@ export class PostController {
             publishedAt: '2024-10-21T06:24:10.000Z',
         }
     })
+    @Get('slugs/:slug')
+    getPostBySlug(
+        @Param('slug') slug: string,
+        @Query('withAuthor') withAuthor: string,
+    ) {
+        return this.postService.getPostBySlug(slug, withAuthor === 'true');
+    }
+
+    @ApiResponse({
+        status: 200,
+        description: 'Get post success',
+        type: PostDTO,
+        example: {
+            documentId: 'abcdefghijklmnopqrstuvwxyz0123456789',
+            title: 'Hello World',
+            slug: 'hello-world',
+            content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer et elit eu nulla congue convallis. Sed ac eros eu nisl convallis malesuada. Nulla facilisi.',
+            authorId: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+            author: {
+                id: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d',
+                name: 'John Doe',
+                profilePictureUrl: 'https://i.pravatar.cc/150',
+            },
+            categories: [
+                { documentId: 'abcdefghijklmnopqrstuvwxyz0123456789', name: 'Category 1' }
+            ],
+            createdAt: '2024-10-21T06:24:10.000Z',
+            updatedAt: '2024-10-21T06:24:10.000Z',
+            publishedAt: '2024-10-21T06:24:10.000Z',
+        }
+    })
     @Get(':documentId')
     getPostByDocumentId(
         @Param('documentId') documentId: string,

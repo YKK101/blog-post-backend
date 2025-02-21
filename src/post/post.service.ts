@@ -61,6 +61,23 @@ export class PostService {
         }
     }
 
+    async getPostBySlug(slug: string, withAuthor = false) {
+        try {
+            const { data } = await this.strapiService.searchEntries(this.PATH, { filters: { slug } });
+            if (data.length === 0) {
+                throw new NotFoundException(`Post with slug ${slug} not found`);
+            }
+            const post = data[0];
+            if (withAuthor) {
+                post.author = await this.userService.getUser({ id: post.authorId });
+            }
+
+            return PostDTO.fromPostJSON(post);
+        } catch (e) {
+            throw e;
+        }
+    }
+
     async searchPosts({
         keyword, categories, authors, sort, pagination, withAuthor = false, publicationState = PublicationState.LIVE
     }: PostQueryInput): Promise<SearchResultDto<PostDTO>> {
