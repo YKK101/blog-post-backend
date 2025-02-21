@@ -12,6 +12,7 @@ export class PostDTO {
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
+    commentCount: number;
 
     constructor(partial: Partial<PostDTO>) {
         Object.assign(this, partial);
@@ -28,7 +29,8 @@ export class PostDTO {
             categories: post['categories'] ? post['categories']?.map(category => CategoryDTO.fromCategoryJSON(category)) : undefined,
             createdAt: post['createdAt'],
             updatedAt: post['updatedAt'],
-            publishedAt: post['publishedAt']
+            publishedAt: post['publishedAt'],
+            commentCount: post['commentCount']
         });
     }
 }

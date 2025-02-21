@@ -4,17 +4,18 @@ import { slugify } from 'transliteration';
 import { StrapiService } from '@/strapi/strapi.service';
 import { PostDTO } from './dto/post.dto';
 import { UserService } from '@/user/user.service';
-import { PublicationState } from '@/constants/enum';
+import { ParentType, PublicationState } from '@/constants/enum';
 import { PostQueryInput } from './dto/postQuery.input';
 import { POST_UPDATE_UNAUTHORIZED } from '@/constants/error';
 import { CategoryDTO } from './dto/category.dto';
 import { SearchResultDto } from '@/constants/dto/searchResult.dto';
+import { CommentService } from '@/comment/comment.service';
 
 @Injectable()
 export class PostService {
     private readonly PATH = 'posts';
 
-    constructor(private readonly strapiService: StrapiService, private userService: UserService) { }
+    constructor(private readonly strapiService: StrapiService, private userService: UserService, private commentService: CommentService) { }
 
     async extractAuthorsMap(ids: string[]) {
         const authorIds = [...new Set(ids)];
@@ -55,6 +56,8 @@ export class PostService {
                 data.author = await this.userService.getUser({ id: data.authorId });
             }
 
+            data.commentCount = await this.commentService.getCommentCountByParent(data.documentId, ParentType.POST);
+
             return PostDTO.fromPostJSON(data);
         } catch (e) {
             throw e;
@@ -71,6 +74,8 @@ export class PostService {
             if (withAuthor) {
                 post.author = await this.userService.getUser({ id: post.authorId });
             }
+
+            post.commentCount = await this.commentService.getCommentCountByParent(post.documentId, ParentType.POST);
 
             return PostDTO.fromPostJSON(post);
         } catch (e) {
@@ -125,6 +130,11 @@ export class PostService {
                 data.forEach(post => (post.author = authorsMap[post.authorId]));
             }
 
+            await Promise.all(data.map(async post => {
+                const commentCount = await this.commentService.getCommentCountByParent(post.documentId, ParentType.POST);
+                post['commentCount'] = commentCount
+            }))
+
             return { data: data.map(PostDTO.fromPostJSON), total: meta.pagination.total };
         } catch (e) {
             throw e;
@@ -153,6 +163,7 @@ export class PostService {
             }
 
             await this.strapiService.deleteEntry(this.PATH, documentId);
+            await this.commentService.resetCommentCountByParent(documentId, ParentType.POST);
         } catch (e) {
             throw e;
         }

@@ -22,6 +22,7 @@ import { CommentModule } from './comment/comment.module';
 
     // Third Party Module
     CacheModule.register({
+      isGlobal: true,
       store: RedisStore,
       url: `redis://${process.env.REDIS_USERNAME}:password@${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
     }),
